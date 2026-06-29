@@ -1,0 +1,27 @@
+# Build artifacts
+target/
+*.class
+*.jar
+*.war
+
+# IDEs and editors
+.idea/
+.project
+.classpath
+.settings/
+*.launch
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Logs
+*.log
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar

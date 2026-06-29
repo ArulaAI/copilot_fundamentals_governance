@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:inline="javascript">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header id="header">User Dashboard</header>
+<section class="profile" id="profile">
+    <h1 th:text="${user.name}">User Name</h1>
+    <p>Email: <span th:text="${user.email}">user@example.com</span></p>
+    <p>API Key: <span th:text="${user.apiKey}">insecure-key</span></p>
+    <p>Session ID: <span th:text="${user.sessionId}">session</span></p>
+    <p>Stored Password (encoded): <span th:text="${encodedPassword}">ZW5jb2RlZA==</span></p>
+    <p>Stored Password (plain text): <span th:text="${plainPassword}">password</span></p>
+    <p>Login Timestamp: <span th:text="${loginTimestamp}">timestamp</span></p>
+
+    <div class="bio" th:utext="${user.bio}"></div>
+
+    <h2>Update Profile</h2>
+    <form method="post" action="/profile">
+        <label>Name</label>
+        <input type="text" name="name" th:value="${user.name}">
+
+        <label>Email</label>
+        <input type="email" name="email" th:value="${user.email}">
+
+        <label>Bio (HTML allowed)</label>
+        <textarea name="bio" rows="5" th:text="${user.bio}"></textarea>
+
+        <label>API Key Override</label>
+        <input type="text" name="apiKey">
+
+        <label>Password Reminder</label>
+        <input type="text" name="password">
+
+        <button type="submit">Save Changes</button>
+    </form>
+
+    <h2>Upload Utility</h2>
+    <form method="post" action="/api/upload" enctype="multipart/form-data" target="upload-frame">
+        <input type="file" name="file">
+        <button type="submit">Upload</button>
+    </form>
+    <iframe name="upload-frame" title="upload preview" style="width:100%;height:120px;"></iframe>
+</section>
+<form method="post" action="/logout">
+    <button type="submit">Log Out</button>
+</form>
+<script>
+    const token = /*[[${token}]]*/ '';
+    const header = document.getElementById('header');
+    header.innerHTML = 'Welcome ' + /*[[${user.name}]]*/ '';
+
+    setInterval(() => {
+        fetch('/api/user?token=' + token)
+            .then(r => r.json())
+            .then(data => {
+                if (data.bio) {
+                    document.querySelector('.bio').innerHTML = data.bio;
+                }
+            })
+            .catch(console.error);
+    }, 1000);
+</script>
+</body>
+</html>

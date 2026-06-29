@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Copilot Governance Lab – Login</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<div class="container">
+    <h1>Developer Portal Login</h1>
+    <div id="header">Welcome</div>
+    <form method="post" action="/login">
+        <label for="username">Username</label>
+        <input id="username" name="username" type="text" placeholder="Username" autocomplete="off"/>
+
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" placeholder="Password"/>
+
+        <input type="hidden" name="returnUrl" th:value="${returnUrl}">
+
+        <div class="error" th:utext="${errorMessage}"></div>
+
+        <button type="submit">Log In</button>
+    </form>
+
+    <div class="debug" th:if="${debugMode}">
+        <h2>Debug Mode Enabled</h2>
+        <pre th:text="${systemInfo}"></pre>
+    </div>
+</div>
+<script>
+    console.log('Login form ready', {
+        server: document.querySelector('pre')?.innerText,
+        timestamp: new Date().toISOString()
+    });
+</script>
+</body>
+</html>

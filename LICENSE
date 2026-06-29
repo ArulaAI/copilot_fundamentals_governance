@@ -1,0 +1,50 @@
+Copyright (c) 2025 InRhythm, Inc. and Arula.AI. All Rights Reserved.
+
+PROPRIETARY AND CONFIDENTIAL
+
+This repository and all of its contents, including but not limited to source code,
+documentation, configuration files, and training materials (collectively, the
+"Materials"), are the exclusive property of InRhythm, Inc. and Arula.AI.
+
+RESTRICTIONS
+
+You may NOT, without the express prior written permission of InRhythm, Inc. and
+Arula.AI:
+
+1. Copy, reproduce, or duplicate any portion of the Materials
+2. Modify, adapt, translate, or create derivative works based on the Materials
+3. Distribute, publish, display, or transmit the Materials to any third party
+4. Sell, license, sublicense, rent, lease, or lend the Materials
+5. Use the Materials for any commercial purpose
+6. Remove or alter any proprietary notices, labels, or marks on the Materials
+7. Reverse engineer, decompile, or disassemble any portion of the Materials
+
+AUTHORIZED USE
+
+Access to these Materials is granted solely to authorized participants of
+Arula.AI training programs, workshops, and labs, and only for the duration of
+such programs. Authorized participants may use the Materials only for
+educational purposes within the scope of the training program.
+
+DISCLAIMER
+
+THE MATERIALS ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL
+INRHYTHM, INC. OR ARULA.AI BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING
+FROM, OUT OF, OR IN CONNECTION WITH THE MATERIALS OR THE USE OR OTHER
+DEALINGS IN THE MATERIALS.
+
+WARNING
+
+This repository contains intentionally vulnerable code for educational purposes.
+This code is NOT suitable for production use. InRhythm, Inc. and Arula.AI
+disclaim all liability for any damages resulting from the use of this code
+outside of authorized training environments.
+
+CONTACT
+
+For licensing inquiries, please contact:
+- InRhythm, Inc.: legal@inrhythm.com
+- Arula.AI: contact@arula.ai
