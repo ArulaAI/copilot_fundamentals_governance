@@ -7,8 +7,15 @@ if ! command -v java &> /dev/null; then
     exit 1
 fi
 
+JAVA_MAJOR=$(java -version 2>&1 | awk -F '"' '/version "/{print $2}' | awk -F'.' '{print ($1=="1"?$2:$1)}')
+if [ -n "$JAVA_MAJOR" ] && [ "$JAVA_MAJOR" -lt 17 ] 2>/dev/null; then
+    echo "ERROR: Java 17+ is required. Found Java $JAVA_MAJOR."
+    exit 1
+fi
+
+# Verify Maven is installed.
 if ! command -v mvn &> /dev/null; then
-    echo "ERROR: Maven is not installed. Install Apache Maven 3.9+ to continue."
+    echo "ERROR: Maven is required but was not found."
     exit 1
 fi
 

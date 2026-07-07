@@ -55,7 +55,6 @@ The lab centers on a Spring Boot 3 application built with Java 17 and Maven. Fol
 - Every Copilot agent session must append a concise summary of actions, decisions, and remaining risks to `docs/workflow-tracker.md` before ending.
 - Planning sessions (java-planning) log assumptions and questions in the tracker and store detailed plans in `docs/plans/plan.md` (overwrite prior plan instead of creating new filenames).
 - Testing agent (java-testing) must record commands executed (`mvn clean`, `mvn test`, `mvn verify`, `mvn dependency:tree`), results, and follow-up actions in `docs/workflow-tracker.md`; do not create alternate coverage logs.
-- Scrum Master agent (java-scrum-master) documents backlog breakdowns, owners, and dependencies both in its task file (for example `plan.tasks.md`) and the workflow tracker.
 - Validation (java-validation) and Need Review (java-need-review) agents capture pass/fail summaries, cited files, and required remediation in the tracker to maintain an audit trail.
 - Store all governance artifacts within `docs/` so downstream agents can reuse them.
 
@@ -65,7 +64,7 @@ The lab centers on a Spring Boot 3 application built with Java 17 and Maven. Fol
 3. Implement Spring Boot changes with secure defaults (validation, logging, error handling).
 4. Run required Maven commands and governance scripts; capture outcomes.
 5. Update documentation (`VULNERABILITIES.md`, `FIXES.md`, `docs/workflow-tracker.md`, etc.) with evidence.
-6. Prepare clean commits/PRs with context, test results, and Copilot usage notes.
+6. Prepare clean commits/PRs with context and test results.
 
 ## Additional Guidelines
 - Use `.java` naming conventions (`PascalCase` types, camelCase members); keep packages descriptive (`com.github.copilot.<feature>`).

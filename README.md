@@ -13,7 +13,7 @@ A hands-on, 90-minute lab for practicing **secure, governed GitHub Copilot usage
 - **Governance-first.** Every stage ends with a `/hand-off` summary appended to `docs/workflow-tracker.md`, giving you a complete audit trail of what Copilot did and why.
 
 The lab uses two custom Copilot surfaces:
-- **Custom agents** in `.github/agents/` (`java-planning`, `java-validation`, `java-testing`, `java-need-review`, `java-scrum-master`, `java-summarizer`).
+- **Custom agents** in `.github/agents/` (`java-planning`, `java-validation`, `java-testing`, `java-need-review`, `java-summarizer`).
 - **Guardrails** in `.github/instructions/java.instructions.md`, applied automatically to Java/config files.
 
 ---
@@ -76,7 +76,6 @@ One continuous flow, six stages (times sum to 90). Run `/hand-off` at the **end 
 | `FIXES.md` | Stage 4 (one row per remediated slice) |
 | `docs/secure-features-guide.md` | Stage 5 |
 | `docs/workflow-tracker.md` | every stage (via `/hand-off`) |
-| `COPILOT_USAGE.md` | throughout (which feature per stage) |
 
 ### Facilitator reference
 - **`docs/FACILITATOR_KEY.md`** — the full vulnerability answer key. **Facilitators only.**

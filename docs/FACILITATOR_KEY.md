@@ -1,12 +1,17 @@
 # Answer Key (facilitator reference)
 
-> **Facilitators only.** This is the complete, accurate catalogue of every intentional vulnerability in the app. Use it to steer the room during Stage 1 `/explain`, to sanity-check the participants' `VULNERABILITIES.md`, and to confirm the plan puts **V1** and **V2** on top. **Do not distribute to participants.**
+> **Facilitators only.** This is the complete, accurate catalogue of every intentional vulnerability in the app. Use it to steer the room during Stage 1 `/explain`, to sanity-check the participants' `VULNERABILITIES.md`, and to confirm the plan's first two steps land on the credential-exposure and privilege-escalation findings. **Do not distribute to participants.**
+
+## The two in-session remediations
+
+These are the only two findings fixed during the lab. Participants discover them through Stage 1 and order them via the `java-planning` rubric — do not reveal the mapping below until after Stage 2.
+
+- **Plaintext password exposure (OWASP A02):** `AuthService.java` finding #1 (log) + `AuthResponse.java` finding #1 + `ApiController.java` finding #3 (`X-Encoded-Password`). In-scope fix = remove the log (use SLF4J, no secrets), drop the `encodedPassword` field and the `X-Encoded-Password` header. *Backlog (do not fix in-session): the disk / `HttpSession` / dashboard password copies.*
+- **Automatic privilege escalation (OWASP A01):** `AuthService.java` finding #3 (`getRoles().add("admin")`). Fix = remove the unconditional grant; normal users get `user` only.
 
 ## How this maps to the lab
-- **We remediate exactly two in-session — the only Critical × trivially-reachable items, both scoring 3 × 3 = 9 on the rubric (Severity × Likelihood):**
-  - **V1 — Plaintext password exposure (A02):** `AuthService.java` finding #1 (log) + `AuthResponse.java` finding #1 + `ApiController.java` finding #3 (`X-Encoded-Password`). In-scope fix = remove the log (SLF4J), drop the `encodedPassword` field and the header. *Backlog (do not fix): the disk / `HttpSession` / dashboard password copies.*
-  - **V2 — Automatic privilege escalation (A01):** `AuthService.java` finding #3 (`getRoles().add("admin")`). Fix = remove the unconditional grant.
-- **Everything else below is documented backlog** — enumerated in Stage 1 and turned into owned backlog tasks in Stage 4 (`docs/plans/plan.tasks.md`), but **never fixed in-session**. Do not let the room "while we're here" these.
+- **We remediate exactly two findings in-session — the only Critical × trivially-reachable items, both scoring 3 × 3 = 9 on the rubric (Severity × Likelihood).** The `java-planning` agent's Remediation Priority Rubric is designed to surface credential-exposure first and privilege-escalation second based on the register contents, without naming them explicitly.
+- **Everything else is documented backlog** — enumerated in Stage 1 and left as Open rows in `VULNERABILITIES.md`. These are **never fixed in-session**. Do not let the room "while we're here" these.
 
 ## The full catalogue
 The Spring Boot reference application intentionally ships with insecure components. The surface is small and focused: one service, one repository, two controllers, two Thymeleaf views, and the model classes that connect them. The findings cluster across OWASP A01–A09.
@@ -113,6 +118,6 @@ Each file carries multiple governance-relevant weaknesses. The vulnerabilities c
 ## Facilitator notes
 
 - **Mapping back to guardrails.** Every finding above ties to a guardrail in `.github/instructions/java.instructions.md` (SLF4J/no-secrets logging, `@Valid` DTOs, secure cookie flags, path-traversal defense, layered architecture). When participants enumerate in Stage 1, nudge them to name the violated guardrail — that is the governance muscle this lab builds.
-- **Keep scope honest.** Only **V1** and **V2** are remediated in-session (Stage 4). The rest are real and worth fixing *eventually*, but in this lab they exist to be **documented as backlog** (`VULNERABILITIES.md` Open rows + `docs/plans/plan.tasks.md`). Resist scope creep.
+- **Keep scope honest.** Only the top two findings (credential-exposure and privilege-escalation — see above) are remediated in-session (Stage 4). The rest are real and worth fixing *eventually*, but in this lab they exist to be **documented as backlog** (remaining Open rows in `VULNERABILITIES.md`). Resist scope creep.
 - **Red → Green.** The Stage 3 security tests assert *secure* behavior, so they fail first; that failure is the proof. Expect exactly two reds (V1, V2) at the Stage 3 checkpoint, everything else green.
 - **Future direction (Stage 5, design-only).** If the room asks "how would we actually fix the rest?", point them at `docs/secure-features-guide.md`: Spring Security filter chain, security headers, SLF4J audit logging, upload allow-list, secure cookie flags. No code is written for these in-session.
