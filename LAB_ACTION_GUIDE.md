@@ -53,13 +53,13 @@ Do **not** write characterization tests (tests that lock in current insecure beh
    - The dashboard renders the **plaintext password** in the page.
    Stop the app with `Ctrl+C`.
 4. Skim `SECURITY.md` (reporting policy, the *Known Risks* and *Security Controls* tables you'll fill later) and `.github/instructions/java.instructions.md` (the guardrails Copilot enforces).
-5. **Run `/explain` on one pinned file at a time** — `AuthService.java`, `ApiController.java`, `InsecureSessionRepository.java`, `PageController.java`, `dashboard.html`. Paste this prompt for each file, swapping the filename:
+5. **Run `/explain` on ** — `AuthService.java`, `ApiController.java`, `InsecureSessionRepository.java`, `PageController.java`, `dashboard.html`. Paste this prompt:
 
    ```text
    /explain Review these files together: AuthService.java, ApiController.java,
    InsecureSessionRepository.java, PageController.java.
 
-   For each file, briefly summarize:
+   For each file, briefly summarize in a table :
    file | responsibility | key dependencies | hidden side effects
 
    Do not suggest fixes.
@@ -111,13 +111,17 @@ Do **not** write characterization tests (tests that lock in current insecure beh
 
 1. **Built-in `/tests`** — test for plan step 1 (credential-exposure finding):
    ```text
-   /tests Write five JUnit 5 + MockMvc tests asserting the SECURE behavior for the
-   first item in your remediation plan: a successful POST /api/login returns NO
-   X-Encoded-Password header and the body exposes no password field.
+   /tests Write 2-3 JUnit 5 + MockMvc tests asserting the SECURE behavior for the
+   first item in plan.md: Verify that:
+   - No password or encoded password is returned in the response.
+   - The `X-Encoded-Password` header is not present.
+   - Credentials or authentication tokens are not persisted to `target/session-store.txt`.
+
+   Keep the tests deterministic and follow existing project conventions.
    ```
 2. **java-testing** — test for plan step 2 (privilege-escalation finding):
    ```text
-   Generate five failing JUnit 5 tests for the second item in your remediation plan:
+   Generate 2-3 JUnit 5 tests for the second item in plan.md:
    assert a normal login's roles do NOT contain "admin". Deterministic. Summarize
    pass/fail only.
    ```
@@ -132,15 +136,28 @@ Do **not** write characterization tests (tests that lock in current insecure beh
 
 1. **Agent** — fix plan step 1:
    ```text
-   Fix plan step 1 only, smallest diff: remove the password log (use SLF4J, no secrets)
-   and stop returning the Base64 password (AuthResponse field + X-Encoded-Password
-   header). Make the step 1 security test pass. Do not touch unrelated code or
-   anything outside plan step 1.
+   Fix remediation plan step 1 only using the smallest possible code changes.
+
+   Implement the secure behavior by:
+   - Stopping the persistence of credentials or authentication tokens to `target/session-store.txt`.
+   - Removing any password or encoded password from API responses.
+   - Removing the `X-Encoded-Password` response header.
+
+   Make the Stage 3 security tests for remediation step 1 pass.
+
+   Do not modify unrelated functionality or begin work on any other remediation plan items.
    ```
 2. **java-need-review** — review the slice:
    ```text
-   Review this remediation slice for security + guardrail compliance against
-   java.instructions.md. Return critical/high issues only.
+   Review only the changes made for remediation slice.
+
+   Validate that:
+
+   The implementation satisfies the objectives of remediation plan step 1.
+   The changes comply with #file:java.instructions.md .
+   Ignore vulnerabilities that belong to other remediation plan items or   remain intentionally open in VULNERABILITIES.md.
+
+   Return only findings related to this remediation slice.
    ```
 3. **Update registries for plan step 1:** mark its row in `VULNERABILITIES.md` as **Remediated**; add a row to `FIXES.md`. Confirm the step 1 security test is **green**.
 4. **Agent** — fix plan step 2:
