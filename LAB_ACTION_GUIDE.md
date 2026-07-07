@@ -5,7 +5,7 @@
 ## Workspace setup
 
 1. **Open the repository root in VS Code.** Not a subfolder. The root `.github/` is what makes Copilot discover the custom agents and the `/hand-off` command.
-   - `.github/agents/` — the six `java-*` agents (planning, validation, testing, need-review, scrum-master, summarizer)
+   - `.github/agents/` — the five `java-*` agents used in this lab: `java-planning`, `java-validation`, `java-testing`, `java-need-review`, `java-summarizer`
    - `.github/instructions/java.instructions.md` — auto-attached coding/security guardrails for every `.java`/`.properties`/`.xml` file
    - `.github/prompts/hand-off.prompt.md` — the `/hand-off` slash command
 2. **The terminal is already at the app root** — `pom.xml` is right here. All `mvn` commands run from this directory.
@@ -18,22 +18,13 @@
 | # | Stage | Min | Copilot surface | Key artifacts produced |
 |---|-------|-----|-----------------|-------------------------|
 | 1 | Setup, Comprehend & Register | 30 | **Built-in `/explain`** (mention `/tests`, `/fix`) | green baseline, app demoed, `VULNERABILITIES.md` (prioritized) |
-| 2 | Plan | 12 | **java-planning → java-validation** | `docs/plans/plan.md` (Steps 1–2 = V1, V2) |
-| 3 | Security Test Generation (top 2) | 14 | `/tests` (V1), **java-testing** (V2) | two **failing** security tests; red-proof checkpoint |
-| 4 | Remediation (top 2 only) | 20 | **java-scrum-master → Agent ↔ java-need-review** | V1+V2 fixed, `plan.tasks.md` backlog, registries updated, tests green |
-| 5 | Secure-Future Implementation | 8 | **java-planning → java-validation** | `docs/secure-features-guide.md` (no new code) |
-| 6 | Governance Validation & Reporting | 6 | **java-testing → java-summarizer** | final `mvn validate/test/verify`, `SECURITY.md` updated, final `/hand-off`, recap |
+| 2 | Plan | 12 | **java-planning → java-validation** | `docs/plans/plan.md` (Critical findings first) |
+| 3 | Security Test Generation (top 2) | 14 | `/tests` (plan step 1), **java-testing** (plan step 2) | two **failing** security tests; red-proof checkpoint |
+| 4 | Remediation (top 2 only) | 20 | **Agent ↔ java-need-review** | top 2 findings fixed, registries updated, tests green |
+| 5 | Secure-Future Implementation | 8 | **java-planning** | `docs/secure-features-guide.md` (no new code) |
+| 6 | Governance Validation & Reporting | 6 | **java-summarizer** | final `mvn validate/test/verify`, `SECURITY.md` updated, final `/hand-off`, recap |
 
 The **Bonus** appendix at the end is optional.
-
-### The two named vulnerabilities we fix
-- **V1 — Plaintext password exposure (OWASP A02).** Password logged via `System.out.printf` in `AuthService.login`; Base64 `encodedPassword` returned in `AuthResponse` and in the `X-Encoded-Password` response header (`ApiController.login`).
-  - **In-scope fix (fits 20 min):** remove the password log (use SLF4J, no secrets); drop `encodedPassword` from `AuthResponse` and remove the `X-Encoded-Password` header.
-  - **Backlog (document, do NOT fix here):** Base64 password on disk (`InsecureSessionRepository`), `plainPassword` in `HttpSession`, password rendered in `dashboard.html`.
-- **V2 — Automatic privilege escalation (OWASP A01).** `user.getRoles().add("admin")` runs on every login in `AuthService.login`.
-  - **In-scope fix:** remove the unconditional admin grant; normal users get `user` only.
-
----
 
 ## test model
 
@@ -65,25 +56,44 @@ Do **not** write characterization tests (tests that lock in current insecure beh
 5. **Run `/explain` on one pinned file at a time** — `AuthService.java`, `ApiController.java`, `InsecureSessionRepository.java`, `PageController.java`, `dashboard.html`. Paste this prompt for each file, swapping the filename:
 
    ```text
-   /explain Review AuthService.java. Summarize its major responsibilities,
-   its dependencies, and any hidden side effects. Then list security weaknesses as
-   a table: weakness | OWASP category | affected asset | one-line impact. No fixes.
+   /explain Review these files together: AuthService.java, ApiController.java,
+   InsecureSessionRepository.java, PageController.java.
+
+   For each file, briefly summarize:
+   file | responsibility | key dependencies | hidden side effects
+
+   Do not suggest fixes.
+   Do not create the vulnerability table yet.
    ```
 6. **Fill `VULNERABILITIES.md`** — one row per weakness.
-7. **End of stage:** update `COPILOT_USAGE.md`, then run **`/hand-off`**.
+   ```text
+   Using the application behavior observed during testing and your review of the source files, complete the `VULNERABILITIES.md` template.
+
+   For each vulnerability you identify:
+   - Assign a unique ID (for example, V1, V2, V3...).
+   - Give the vulnerability a concise name.
+   - Assign an appropriate severity (Critical, High, Medium, or Low).
+   - Map it to the most relevant OWASP Top 10 category.
+   - List the affected file(s).
+   - Describe the security impact in one concise sentence.
+   - Set the status to `Open`.
+
+   Document only vulnerabilities that are supported by the current code and observed application behavior.
+   ```
+7. **End of stage:** run **`/hand-off`**.
 
 ---
 
 ## Stage 2 — Plan (12 min)
 
-**Goal:** turn the register into an ordered, validated remediation plan where **Step 1 = V1** and **Step 2 = V2**.
+**Goal:** turn the register into an ordered, validated remediation plan with Critical findings first.
 
 1. **java-planning** — produce the plan:
    ```text
    Using VULNERABILITIES.md, produce a multi-step remediation plan. For each step:
    target file(s), one-line fix, expected post-fix state, success criterion.
-   Step 1 = V1 (plaintext password exposure), Step 2 = V2 (automatic privilege
-   escalation) — the two highest-priority items. Save to docs/plans/plan.md.
+   Address Critical-severity findings first, then High severity. Number the steps
+   in priority order. Save to docs/plans/plan.md.
    ```
 2. **java-validation** — check the plan against the guardrails:
    ```text
@@ -91,7 +101,7 @@ Do **not** write characterization tests (tests that lock in current insecure beh
    Return pass/fail and required corrections before Stage 3.
    ```
 3. Confirm `docs/plans/plan.md` exists.
-4. **End of stage:** update `COPILOT_USAGE.md`, then run **`/hand-off`**.
+4. **End of stage:** run **`/hand-off`**.
 
 ---
 
@@ -99,62 +109,67 @@ Do **not** write characterization tests (tests that lock in current insecure beh
 
 **Goal:** two tests that assert secure behavior and therefore **fail now** (red-proof).
 
-1. **Built-in `/tests`** — V1 test:
+1. **Built-in `/tests`** — test for plan step 1 (credential-exposure finding):
    ```text
-   /tests Write Five JUnit 5 + MockMvc test asserting the SECURE behavior for V1:
-   a successful POST /api/login returns NO X-Encoded-Password header and the body
-   exposes no password field.
+   /tests Write five JUnit 5 + MockMvc tests asserting the SECURE behavior for the
+   first item in your remediation plan: a successful POST /api/login returns NO
+   X-Encoded-Password header and the body exposes no password field.
    ```
-2. **java-testing** — V2 test:
+2. **java-testing** — test for plan step 2 (privilege-escalation finding):
    ```text
-   Generate five failing JUnit 5 tests for V2: assert a normal login's roles do NOT
-   contain "admin". Deterministic. Summarize pass/fail only.
+   Generate five failing JUnit 5 tests for the second item in your remediation plan:
+   assert a normal login's roles do NOT contain "admin". Deterministic. Summarize
+   pass/fail only.
    ```
-3. **Checkpoint:** `mvn test` 
-4. **End of stage:** update `COPILOT_USAGE.md`, then run **`/hand-off`**.
+3. **Checkpoint:** `mvn test`
+4. **End of stage:** run **`/hand-off`**.
 
 ---
 
 ## Stage 4 — Remediation (top 2 ONLY) (20 min)
 
-**Goal:** fix V1, then V2 — smallest diffs — with a review pass per slice, and convert the rest into an owned backlog.
+**Goal:** fix plan steps 1 and 2 — smallest diffs — with a review pass per slice. Remaining Open findings in `VULNERABILITIES.md` are the documented backlog; do not fix them.
 
-1. **java-scrum-master** — paste this prompt to slice the work and capture the backlog:
+1. **Agent** — fix plan step 1:
    ```text
-   Break remediation into tracked task slices with acceptance criteria and an owner:
-   Task 1 = V1, Task 2 = V2. Then convert every remaining Open vulnerability in
-   VULNERABILITIES.md into a backlog task (owner, acceptance criterion) — these are
-   NOT fixed in this session. Save to docs/plans/plan.tasks.md.
+   Fix plan step 1 only, smallest diff: remove the password log (use SLF4J, no secrets)
+   and stop returning the Base64 password (AuthResponse field + X-Encoded-Password
+   header). Make the step 1 security test pass. Do not touch unrelated code or
+   anything outside plan step 1.
    ```
-2. **Agent** — paste this prompt to remediate V1:
-   ```text
-   Fix V1 only, smallest diff: remove the password log (use SLF4J, no secrets) and
-   stop returning the Base64 password (AuthResponse field + X-Encoded-Password header).
-   Make the V1 test pass. Do not touch unrelated code or the V1 backlog items.
-   ```
-3. **java-need-review** — paste this prompt to review the slice:
+2. **java-need-review** — review the slice:
    ```text
    Review this remediation slice for security + guardrail compliance against
    java.instructions.md. Return critical/high issues only.
    ```
-4. **Update registries for V1:** set its row in `VULNERABILITIES.md` to **Remediated**; add a new row to `FIXES.md`. Confirm the **V1 test goes green**.
-5. **Repeat steps 2–4 for V2**, swapping the Agent prompt for: *"Fix V2 only, smallest diff: remove the unconditional `getRoles().add("admin")` grant in `AuthService.login`. Make the V2 test pass. Do not touch unrelated code or the V2 backlog items."* Then **stop.** Remaining vulnerabilities stay `Open` in `VULNERABILITIES.md` and live as tasks in `plan.tasks.md` = the named backlog.
-6. **End of stage:** update `COPILOT_USAGE.md`, then run **`/hand-off`**.
+3. **Update registries for plan step 1:** mark its row in `VULNERABILITIES.md` as **Remediated**; add a row to `FIXES.md`. Confirm the step 1 security test is **green**.
+4. **Agent** — fix plan step 2:
+   ```text
+   Fix plan step 2 only, smallest diff: remove the unconditional getRoles().add("admin")
+   grant in AuthService.login. Make the step 2 security test pass. Do not touch
+   unrelated code or anything outside plan step 2.
+   ```
+5. **java-need-review** — review the slice:
+   ```text
+   Review this remediation slice for security + guardrail compliance against
+   java.instructions.md. Return critical/high issues only.
+   ```
+6. **Update registries for plan step 2:** mark its row in `VULNERABILITIES.md` as **Remediated**; add a row to `FIXES.md`. Confirm the step 2 security test is **green**.
+7. Run `mvn test`. If any failures occur, use `/fix`, then rerun. All other Open rows in `VULNERABILITIES.md` are the deliberate backlog — do not fix them.
+8. **End of stage:** run **`/hand-off`**.
 
 ---
 
 ## Stage 5 — Secure-Future Implementation (8 min)
 
-**Goal:** describe the proactive controls to adopt next — **no new code**.
+**Goal:** describe the proactive controls to adopt next — **no new code**, no handoff.
 
 1. **java-planning** — paste this prompt to author the guide:
    ```text
    Write docs/secure-features-guide.md describing proactive controls to adopt next:
    Spring Security filter chain, security headers, SLF4J audit logging, upload
-   allow-list, secure cookie flags. No code changes. Then validate the guide.
+   allow-list, secure cookie flags. No code changes.
    ```
-2. **java-validation** — validate the guide against the guardrails.
-3. **End of stage:** update `COPILOT_USAGE.md`, then run **`/hand-off`**.
 
 ---
 
@@ -162,17 +177,18 @@ Do **not** write characterization tests (tests that lock in current insecure beh
 
 **Goal:** prove the final state and close the audit trail.
 
-1. **java-testing** — run the final gates in the terminal:
+1. Run the final gates in the terminal:
    ```bash
    mvn validate && mvn test && mvn verify
    ```
-   All green — now including the two security tests (V1, V2 went green in Stage 4).
-2. **Update `SECURITY.md`:** record the two controls added (V1, V2 fixes) in the *Security Controls* table, and the remaining Open vulnerabilities as *Known Risks / Accepted* (the backlog).
-3. **Final `/hand-off`** (java-summarizer) → the closing entry in `docs/workflow-tracker.md`.
-4. **Recap for the room:**
+   All green — now including the two security tests (plan steps 1 and 2 went green in Stage 4).
+2. **Update `SECURITY.md`:** record the two controls added (plan steps 1 and 2 fixes) in the *Security Controls* table, and the remaining Open vulnerabilities as *Known Risks / Accepted* (the backlog).
+3. **Review `docs/workflow-tracker.md`** and confirm a hand-off entry exists for every completed stage.
+4. **Final `/hand-off`** (java-summarizer) → the closing entry in `docs/workflow-tracker.md`.
+5. **Recap for the room:**
    - built-in `/explain` vs. the custom-agent loop;
    - what shipped: **2 traced fixes** (register → plan → failing test → fix → review → green);
-   - the **named backlog** that was deliberately *documented, not fixed*.
+   - the **documented backlog** that was deliberately *registered, not fixed*.
 
 ---
 
@@ -181,20 +197,17 @@ Do **not** write characterization tests (tests that lock in current insecure beh
 | Artifact | Used in |
 |---|---|
 | `.github/agents/java-planning` | Stages 2, 5 |
-| `.github/agents/java-validation` | Stages 2, 5 |
-| `.github/agents/java-testing` | Stages 3, 6 |
+| `.github/agents/java-validation` | Stage 2 |
+| `.github/agents/java-testing` | Stage 3 |
 | `.github/agents/java-need-review` | Stage 4 |
-| `.github/agents/java-scrum-master` | Stage 4 (slices + backlog) |
-| `.github/agents/java-summarizer` (`/hand-off`) | every stage |
+| `.github/agents/java-summarizer` (`/hand-off`) | Stages 1, 2, 3, 4, 6 |
 | `.github/instructions/java.instructions.md` | Stages 1, 2, 4, 5 (guardrail reference) |
 | Built-in `/explain` | Stage 1 |
-| Built-in `/tests` | Stage 3 (V1) |
+| Built-in `/tests` | Stage 3 (plan step 1) |
 | `VULNERABILITIES.md` | Stages 1, 4 |
 | `FIXES.md` | Stage 4 |
-| `COPILOT_USAGE.md` | every stage |
-| `docs/workflow-tracker.md` | every stage (`/hand-off`) |
+| `docs/workflow-tracker.md` | Stages 1, 2, 3, 4, 6 (`/hand-off`) |
 | `docs/plans/plan.md` | Stage 2 |
-| `docs/plans/plan.tasks.md` | Stage 4 |
 | `docs/secure-features-guide.md` | Stage 5 |
 | `SECURITY.md` | Stages 1 (orient), 6 (record) |
 | `docs/FACILITATOR_KEY.md` | facilitator reference (answer key) |
@@ -209,6 +222,6 @@ A governance lab cares about *what was verified*, not just what was built. Use t
 2. Open the report at **`target/site/jacoco/index.html`**.
 3. Read it as evidence, and discuss:
    - Which classes/branches are **covered** vs. **unverified** (e.g., the endpoints and branches no test exercises)?
-   - Now that V1 and V2 have tests, what does coverage tell you about the *backlog* — the code paths we deliberately left unfixed and unverified?
+   - Now that the top two findings have tests, what does coverage tell you about the *backlog* — the code paths we deliberately left unfixed and unverified?
    - In a real audit, coverage is **evidence of assurance**: it shows reviewers exactly which security behaviors are proven and which are only asserted in prose.
 4. There is **no target percentage** here. The point is to reason about coverage as a governance signal — not to chase a number or generate tests under time pressure.
