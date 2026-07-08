@@ -52,9 +52,7 @@ The lab centers on a Spring Boot 3 application built with Java 17 and Maven. Fol
   - `mvn dependency:tree` (supply evidence of dependency review)
 
 ## Workflow Logging Requirements
-- Every Copilot agent session must append a concise summary of actions, decisions, and remaining risks to `docs/workflow-tracker.md` before ending.
 - Planning sessions (java-planning) log assumptions and questions in the tracker and store detailed plans in `docs/plans/plan.md` (overwrite prior plan instead of creating new filenames).
-- Testing agent (java-testing) must record commands executed (`mvn clean`, `mvn test`, `mvn verify`, `mvn dependency:tree`), results, and follow-up actions in `docs/workflow-tracker.md`; do not create alternate coverage logs.
 - Validation (java-validation) and Need Review (java-need-review) agents capture pass/fail summaries, cited files, and required remediation in the tracker to maintain an audit trail.
 - Store all governance artifacts within `docs/` so downstream agents can reuse them.
 

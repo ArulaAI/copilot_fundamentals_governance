@@ -1,4 +1,4 @@
-# Lab Action Guide — GitHub Copilot Governance Lab (Java)
+# Lab Action Guide — GitHub Copilot Fundamentals and Governance Lab (Java)
 
 ---
 
@@ -43,7 +43,9 @@ Do **not** write characterization tests (tests that lock in current insecure beh
 1. **Verify the build is green.** In the terminal:
    ```bash
    ./scripts/setup-lab.sh      # checks Java 17+, Maven, runs mvn validate
-   mvn validate && mvn test && mvn verify
+   mvn validate
+   mvn test
+   mvn verify
    ```
    One existing test passes; the build is green. Vulnerabilities surface through *behavior*, not build failures.
 2. **Run the app.** `mvn spring-boot:run` → open **http://localhost:8080** (login → dashboard).
@@ -112,7 +114,7 @@ Do **not** write characterization tests (tests that lock in current insecure beh
 1. **Built-in `/tests`** — test for plan step 1 (credential-exposure finding):
    ```text
    /tests Write 2-3 JUnit 5 + MockMvc tests asserting the SECURE behavior for the
-   first item in plan.md: Verify that:
+   first remediation step in plan.md: Verify that:
    - No password or encoded password is returned in the response.
    - The `X-Encoded-Password` header is not present.
    - Credentials or authentication tokens are not persisted to `target/session-store.txt`.
@@ -120,10 +122,17 @@ Do **not** write characterization tests (tests that lock in current insecure beh
    Keep the tests deterministic and follow existing project conventions.
    ```
 2. **java-testing** — test for plan step 2 (privilege-escalation finding):
+   
    ```text
-   Generate 2-3 JUnit 5 tests for the second item in plan.md:
-   assert a normal login's roles do NOT contain "admin". Deterministic. Summarize
-   pass/fail only.
+   Generate 2–3 focused JUnit 5 tests for the second remediation step in docs/plans/plan.md.
+
+   Verify that:
+   - a normal authenticated user is not assigned the `admin` role.
+   - authorization defaults to deny when the user or token is missing.
+   
+   Keep the tests deterministic.
+   Summarize expected pass/fail only.
+   Do not modify production code.
    ```
 3. **Checkpoint:** `mvn test`
 4. **End of stage:** run **`/hand-off`**.
@@ -157,19 +166,31 @@ Do **not** write characterization tests (tests that lock in current insecure beh
    The changes comply with #file:java.instructions.md .
    Ignore vulnerabilities that belong to other remediation plan items or   remain intentionally open in VULNERABILITIES.md.
 
-   Return only findings related to this remediation slice.
+   Return only findings related to this remediation slice along with PASS/FAIL.
    ```
 3. **Update registries for plan step 1:** mark its row in `VULNERABILITIES.md` as **Remediated**; add a row to `FIXES.md`. Confirm the step 1 security test is **green**.
 4. **Agent** — fix plan step 2:
    ```text
-   Fix plan step 2 only, smallest diff: remove the unconditional getRoles().add("admin")
-   grant in AuthService.login. Make the step 2 security test pass. Do not touch
-   unrelated code or anything outside plan step 2.
+
+   Fix remediation plan step 2 only using the smallest possible code changes.
+
+   Implement the secure behavior described in the second remediation step in docs/plans/plan.md. remove the unconditional getRoles().add("admin") grant in AuthService.login.
+   Make the Stage 3 security tests for remediation step 2 pass.
+
+   Do not modify unrelated functionality.
+   Do not begin work on later remediation plan items.
    ```
 5. **java-need-review** — review the slice:
    ```text
-   Review this remediation slice for security + guardrail compliance against
-   java.instructions.md. Return critical/high issues only.
+      Review only the implementation for remediation plan step 2.
+
+   Validate that:
+   - the implementation satisfies the objectives of remediation plan step 2.
+   - the changes comply with #file:java.instructions.md.
+
+   Ignore vulnerabilities assigned to other remediation plan items or intentionally left Open in VULNERABILITIES.md.
+
+   Return only findings related to this remediation slice with PASS/FAIL.
    ```
 6. **Update registries for plan step 2:** mark its row in `VULNERABILITIES.md` as **Remediated**; add a row to `FIXES.md`. Confirm the step 2 security test is **green**.
 7. Run `mvn test`. If any failures occur, use `/fix`, then rerun. All other Open rows in `VULNERABILITIES.md` are the deliberate backlog — do not fix them.
@@ -177,7 +198,7 @@ Do **not** write characterization tests (tests that lock in current insecure beh
 
 ---
 
-## Stage 5 — Secure-Future Implementation (8 min)
+## Stage 5 — Secure-Feature Implementation (8 min)
 
 **Goal:** describe the proactive controls to adopt next — **no new code**, no handoff.
 
@@ -196,7 +217,8 @@ Do **not** write characterization tests (tests that lock in current insecure beh
 
 1. Run the final gates in the terminal:
    ```bash
-   mvn validate && mvn test && mvn verify
+   mvn validate 
+   mvn verify
    ```
    All green — now including the two security tests (plan steps 1 and 2 went green in Stage 4).
 2. **Update `SECURITY.md`:** record the two controls added (plan steps 1 and 2 fixes) in the *Security Controls* table, and the remaining Open vulnerabilities as *Known Risks / Accepted* (the backlog).
