@@ -168,8 +168,7 @@ Do **not** write characterization tests (tests that lock in current insecure beh
 
    Return only findings related to this remediation slice along with PASS/FAIL.
    ```
-3. **Update registries for plan step 1:** mark its row in `VULNERABILITIES.md` as **Remediated**; add a row to `FIXES.md`. Confirm the step 1 security test is **green**.
-4. **Agent** — fix plan step 2:
+3. **Agent** — fix plan step 2:
    ```text
 
    Fix remediation plan step 2 only using the smallest possible code changes.
@@ -180,7 +179,7 @@ Do **not** write characterization tests (tests that lock in current insecure beh
    Do not modify unrelated functionality.
    Do not begin work on later remediation plan items.
    ```
-5. **java-need-review** — review the slice:
+4. **java-need-review** — review the slice:
    ```text
       Review only the implementation for remediation plan step 2.
 
@@ -192,9 +191,9 @@ Do **not** write characterization tests (tests that lock in current insecure beh
 
    Return only findings related to this remediation slice with PASS/FAIL.
    ```
-6. **Update registries for plan step 2:** mark its row in `VULNERABILITIES.md` as **Remediated**; add a row to `FIXES.md`. Confirm the step 2 security test is **green**.
-7. Run `mvn test`. If any failures occur, use `/fix`, then rerun. All other Open rows in `VULNERABILITIES.md` are the deliberate backlog — do not fix them.
-8. **End of stage:** run **`/hand-off`**.
+5. Run `mvn test`. If any failures occur, use `/fix`, then rerun. All other Open rows in `VULNERABILITIES.md` are the deliberate backlog — do not fix them.
+6. Mark both rows in `VULNERABILITIES.md` as **Remediated**; add both rows to `FIXES.md`. Confirm the security test is **green**.
+7. **End of stage:** run **`/hand-off`**.
 
 ---
 
